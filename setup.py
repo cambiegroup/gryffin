@@ -5,7 +5,6 @@ __author__ = 'Florian Hase, Matteo Aldeghi'
 
 import versioneer
 import glob
-import os
 import sys
 from setuptools import setup, find_packages
 from setuptools import Extension, Command
