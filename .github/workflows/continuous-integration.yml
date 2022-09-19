@@ -38,6 +38,7 @@ jobs:
         pip install codecov
         pip install pytest
         pip install pytest-cov
+        pip install cython
         python setup.py prepare
     - name: Install package
       run: |
