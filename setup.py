@@ -101,14 +101,19 @@ ext_modules = [
     mk_ext('gryffin.bayesian_network.kernel_prob_reshaping', ['src/gryffin/bayesian_network/kernel_prob_reshaping.c'])]
 
 # -----
+# cmdclass - get versioneer one and add building hooks
+# -----
+cmdclass = versioneer.get_cmdclass()
+
+cmdclass['build_ext'] = BuildExt
+cmdclass['prepare'] = PrepareCommand
+
+# -----
 # Setup
 # -----
 setup(name='gryffin',
       version=versioneer.get_version(),
-      # cmdclass=versioneer.get_cmdclass(),
-      cmdclass={
-          'build_ext': BuildExt,
-          'prepare': PrepareCommand},
+      cmdclass=cmdclass,
       description='Bayesian optimization for continuous and categorical variables',
       long_description=readme(),
       long_description_content_type='text/markdown',
