@@ -20,7 +20,7 @@ jobs:
 
       - name: Prepare, i.e. creates *.c files
         run: |
-          pip install cython
+          python -m pip install cython
           python setup.py prepare
 
       - name: Build wheels
