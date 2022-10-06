@@ -223,7 +223,7 @@ class BayesianNetwork(Logger):
 
     def _reshape_categorical_probabilities(self, probs, descriptors):
         try:
-            if np.all(np.isfinite(np.array(descriptors, dtype=np.float))):
+            if np.all(np.isfinite(np.array(descriptors, dtype=float))):
                 probs = self.cat_reshaper.reshape(probs, descriptors)
         except ValueError:
             probs = self.cat_reshaper.reshape(probs, descriptors)

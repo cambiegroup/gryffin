@@ -296,7 +296,7 @@ class ConfigParser(Logger):
                 descriptors.append(spec['descriptors'])
             else:
                 descriptors.append(None)
-        return np.array(descriptors)
+        return np.array(descriptors, dtype=object)
 
     @property
     def feature_process_constrained(self):

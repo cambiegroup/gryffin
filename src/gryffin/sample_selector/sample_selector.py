@@ -199,7 +199,7 @@ class SampleSelector(Logger):
         # collect samples
         #-----------------
 
-        if self.problem_type is not 'fully_categorical':
+        if self.problem_type != 'fully_categorical':
 
             num_obs = len(obs_params)
             feature_ranges = self.config.feature_ranges[self.non_cat_param_idx]

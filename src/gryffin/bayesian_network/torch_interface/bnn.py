@@ -2,6 +2,7 @@ from typing import OrderedDict
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+from torch import sigmoid
 import torch.optim as optim
 import torch.distributions as td
 import torchbnn as bnn
@@ -156,7 +157,7 @@ class BNN(nn.Module):
                     target = y[:, kernel_begin: kernel_end]
                     lowers, uppers = self.kernel_lowers[kernel_begin: kernel_end], self.kernel_uppers[kernel_begin : kernel_end]
 
-                    post_support = (uppers - lowers) * (1.2 * F.sigmoid(post_relevant) - 0.1) + lowers
+                    post_support = (uppers - lowers) * (1.2 * sigmoid(post_relevant) - 0.1) + lowers
                     post_predict = td.normal.Normal(post_support,  scale[:,  kernel_begin: kernel_end])
 
                 
