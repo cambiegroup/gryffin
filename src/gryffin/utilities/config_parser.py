@@ -296,7 +296,8 @@ class ConfigParser(Logger):
                 descriptors.append(spec['descriptors'])
             else:
                 descriptors.append(None)
-        return np.array(descriptors, dtype=object)
+        # Force dtype to float so None becomes nan, otherwise we get a dtype=object which fails assumptions elsewhere
+        return np.array(descriptors, dtype=float)
 
     @property
     def feature_process_constrained(self):
