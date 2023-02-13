@@ -131,7 +131,7 @@ setup(name='gryffin',
       package_dir={'': 'src'},
       zip_safe=False,
       tests_require=['pytest'],
-      install_requires=['numpy', 'sqlalchemy', 'rich', 'pandas', 'matter-chimera', 'deap', 'torch', 'torchbnn'],
+      install_requires=['numpy', 'sqlalchemy', 'rich', 'pandas', 'matter-chimera', 'deap', 'torch', 'torchbnn', 'scipy'],
       python_requires=">=3.7",
       ext_modules=ext_modules,
       entry_points={"console_scripts": ["gryffin = gryffin.cli:entry_point"]}

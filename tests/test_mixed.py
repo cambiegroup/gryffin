@@ -42,8 +42,8 @@ def test_mixed():
 	gryffin = Gryffin(config_dict=config)
 	observations = []
 	for iter_ in range(BUDGET):
-		select_ix = iter_ % len(SAMPLING_STRATEGIES)
-		sampling_strategy = SAMPLING_STRATEGIES[select_ix]
+		# Alternate explore and exploit
+		sampling_strategy = -1 if iter_ % 2 == 0 else 1
 
 		samples = gryffin.recommend(observations, sampling_strategies=[sampling_strategy])
 		sample = samples[0]

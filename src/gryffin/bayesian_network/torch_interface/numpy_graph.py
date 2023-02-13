@@ -4,6 +4,7 @@ __author__ = 'Florian Hase'
 
 
 import numpy as np
+from scipy.special import expit
 
 
 def sigmoid(x):
@@ -94,7 +95,8 @@ class NumpyGraph:
                 #post_temperature = 0.4
                 post_support = post_relevant
 
-                post_probs = 1. / (1. + np.exp(-post_support))
+                # expit(x) = 1/(1+exp(-x))  # avoid buffer overflow for large x
+                post_probs = expit(post_support)
                 post_probs_normed = post_probs / np.sum(post_probs)
 
                 # sample from relaxed one hot categorical

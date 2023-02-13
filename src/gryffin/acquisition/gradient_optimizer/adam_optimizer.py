@@ -62,8 +62,12 @@ class AdamOptimizer:
 
     def reset(self):
         self.iterations = 0
-        self.ms = np.zeros(self.num_dims)
-        self.vs = np.zeros(self.num_dims)
+        if self.num_dims:
+            self.ms = np.zeros(self.num_dims)
+            self.vs = np.zeros(self.num_dims)
+        else:
+            self.ms = np.zeros(())
+            self.vs = np.zeros(())
 
     def set_func(self, func, select=None):
         """
