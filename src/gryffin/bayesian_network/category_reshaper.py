@@ -46,9 +46,7 @@ class CategoryReshaper(Logger):
 		num_samples     = cat_probs.shape[0]
 		num_obs         = cat_probs.shape[1]
 		num_kernels     = cat_probs.shape[2]
-		num_descriptors = descriptors.shape[1] 
-
-		start = time.time()
+		num_descriptors = descriptors.shape[1]
 
 		recomputed_probs = np.empty(cat_probs.shape)
 
@@ -56,9 +54,6 @@ class CategoryReshaper(Logger):
 		for sample_index in range(num_samples):
 			# put on separate thread
 			for obs_index in range(num_obs):
-				
-				start_0 = time.time()
-
 				probs = cat_probs[sample_index, obs_index]
 
 				# compute distances to all categories
@@ -85,11 +80,6 @@ class CategoryReshaper(Logger):
 				# got the distances
 				rescaled_probs = np.exp( - distances) / np.sum( np.exp( - distances))
 				recomputed_probs[sample_index, obs_index] = rescaled_probs
-
-				end_0 = time.time()
-			
-		end = time.time()
-		total_time = end - start
 
 		if return_dict.__class__.__name__ == 'DictProxy':
 			return_dict[index] = recomputed_probs
@@ -126,8 +116,7 @@ class CategoryReshaper(Logger):
 				if prob_dict['descriptors'] is None: 
 					result_dict[feature_index] = prob_dict['probs']
 					continue
-				process   = Process(target = self.cython_recompute_probs, args = (prob_dict['probs'], prob_dict['descriptors'], feature_index, result_dict))
-#				process   = Process(target = self.python_recompute_probs, args = (prob_dict['probs'], prob_dict['desriptors'], feature_index, result_dict))
+				process = Process(target = self.cython_recompute_probs, args = (prob_dict['probs'], prob_dict['descriptors'], feature_index, result_dict))
 				processes.append(process)
 				process.start()
 			for process in processes:	
@@ -152,4 +141,3 @@ class CategoryReshaper(Logger):
 		# assemble reshaped probs
 		reshaped_probs = np.concatenate(recomputed_probs, axis = 2)
 		return reshaped_probs
-
