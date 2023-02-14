@@ -80,7 +80,7 @@ class Logger:
             print(message)
             return error_message, message
 
-    def log_chapter(self, title, line="─",):
+    def log_chapter(self, title, line="─", style=""):
         if self.verbosity >= 4:
             title = " " + title + " "
             print(f"{title:{line}^80}")
