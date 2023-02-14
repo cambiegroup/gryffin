@@ -15,6 +15,7 @@ SAMPLING_STRATEGIES = np.array([-1, 1])
 surface = dejong
 surface_moo = rosenbrock
 
+
 def test_mixed():
 	param_2_details = {f'x_{i}': [i] for i in range(NUM_OPTS)}
 	config = {

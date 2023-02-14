@@ -3,6 +3,8 @@
 __author__ = "Florian Hase"
 
 import copy
+import multiprocessing
+
 import numpy as np
 from gryffin.utilities import Logger
 from .generator import Generator
@@ -27,11 +29,10 @@ class DescriptorGenerator(Logger):
         verbosity = self.config.get("verbosity")
         Logger.__init__(self, "DescriptorGenerator", verbosity=verbosity)
 
-        self.num_cpus = 1
-        # if self.config.get('num_cpus') == 'all':
-        #     self.num_cpus = multiprocessing.cpu_count()
-        # else:
-        #     self.num_cpus = int(self.config.get('num_cpus'))
+        if self.config.get('num_cpus') == 'all':
+            self.num_cpus = multiprocessing.cpu_count()
+        else:
+            self.num_cpus = int(self.config.get('num_cpus'))
 
     def _generate_single_descriptors(
         self,
@@ -177,6 +178,7 @@ class DescriptorGenerator(Logger):
 
             # store results in share memory dict
             self.weights = Manager().dict()
+            self.reduced_gen_descs = Manager().dict()
             self.sufficient_indices = Manager().dict()
             result_dict = Manager().dict()
             processes = []  # store parallel processes here
