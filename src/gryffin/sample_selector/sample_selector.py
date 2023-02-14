@@ -157,18 +157,14 @@ class SampleSelector(Logger):
 
         """
         start = time.time()
-        if self.verbosity > 3.5:  # i.e. INFO or DEBUG
-            cm = self.console.status("Selecting best samples to recommend...")
-        else:
-            cm = nullcontext()
-        with cm:
-            samples = self._select(
-                num_batches,
-                proposals,
-                eval_acquisition,
-                sampling_param_values,
-                obs_params,
-            )
+        print("Selecting best samples to recommend...")
+        samples = self._select(
+            num_batches,
+            proposals,
+            eval_acquisition,
+            sampling_param_values,
+            obs_params,
+        )
 
         end = time.time()
         time_string = parse_time(start, end)

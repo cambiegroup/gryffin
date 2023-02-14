@@ -340,18 +340,9 @@ class Acquisition(Logger):
             # time
             start_opt = time.time()
 
-            # get approximate min/max of sample acquisition
-            if self.verbosity > 3.5:
-                with self.console.status(
-                    "Performing acquisition optimization pre-processing tasks..."
-                ):
-                    acq_min, acq_max = self._get_approx_min_max(
-                        random_proposals, sampling_param, dominant_samples
-                    )
-            else:
-                acq_min, acq_max = self._get_approx_min_max(
-                    random_proposals, sampling_param, dominant_samples
-                )
+            acq_min, acq_max = self._get_approx_min_max(
+                random_proposals, sampling_param, dominant_samples
+            )
             self.acqs_min_max[batch_index] = [acq_min, acq_max]
 
             # define acquisition function to be optimized
@@ -524,17 +515,12 @@ class Acquisition(Logger):
         # get random samples
         # ------------------
         start_random = time.time()
-        if self.verbosity > 3.5:
-            cm = self.console.status("Drawing random samples...")
-        else:
-            cm = nullcontext()
-        with cm:
-            random_proposals = self._propose_randomly(
-                best_params,
-                num_samples_per_dim,
-                dominant_samples=dominant_samples,
-                acquisition_constraints=acquisition_constraints,
-            )
+        random_proposals = self._propose_randomly(
+            best_params,
+            num_samples_per_dim,
+            dominant_samples=dominant_samples,
+            acquisition_constraints=acquisition_constraints,
+        )
 
         # at this point, len(random_proposals) = num_samples * num_dims * 2, where the final x2 factor is because
         # we draw random samples from the whole domain but also in the vicinity of the current best

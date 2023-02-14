@@ -4,4 +4,5 @@ requires = ["oldest-supported-numpy", "setuptools", "wheel", "cython"]
 [tool.cibuildwheel]
 before-build = "pip install numpy cython && python setup.py prepare"
 # Skip PyPy MacOS MUSL linux and linux 32 bit
-skip = ["pp*", "*-macosx", "*-musllinux", "manylinux_i686", ]
+build = ["cp310-win_amd64"]
+#skip = ["pp*", "*-macosx", "*-musllinux", "manylinux_i686", ]
