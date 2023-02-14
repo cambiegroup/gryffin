@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 
-import numpy as np
 import pandas as pd
 import os
 import shutil
@@ -19,69 +18,89 @@ def parse_options():
 
     parser = argparse.ArgumentParser()
 
-    parser.add_argument('-f',
-                        dest='file',
-                        type=str,
-                        help='Excel/CSV file with all previous experiments.',
-                        required=True)
-    parser.add_argument('-c',
-                        dest='json',
-                        type=str,
-                        help='Json configuration file with parameters and objectives.',
-                        required=True)
-    parser.add_argument('-n',
-                        metavar='',
-                        dest='num_experiments',
-                        type=int,
-                        help='Number of experiments to suggest. Default is 1. '
-                             'Note that Gryffin will alternate between exploration and exploitation.',
-                        default=1)
-    parser.add_argument('--num_cpus',
-                        metavar='',
-                        dest='num_cpus',
-                        type=int,
-                        help='Number of CPUs to use. Default is 1.',
-                        default=1)
-    parser.add_argument('--optimizer',
-                        metavar='',
-                        dest='optimizer',
-                        type=str.lower,
-                        help='Algorithm to use to optimize the acquisition function. Choices are "adam" or "genetic". '
-                             'Default is "adam".',
-                        default='adam',
-                        choices=['adam', 'genetic'])
-    parser.add_argument('--dynamic',
-                        dest='dynamic',
-                        help='Whether to use dynamic Gryffin. Default is False.',
-                        default=False,
-                        action='store_true')
-    parser.add_argument('--feas_approach',
-                        metavar='',
-                        dest='feas_approach',
-                        type=str.lower,
-                        help='Approach to unknown feasibility constraints. Choices are: '
-                             '"fwa" (feasibility-weighted acquisition), '
-                             '"fca" (feasibility-constrained acquisition), '
-                             '"fia" (feasibility-interpolated acquisition). '
-                             'Default is "fia".',
-                        default='fia',
-                        choices=['fwa', 'fca', 'fia'])
-    parser.add_argument('--boosted',
-                        dest='boosted',
-                        help='Whether to use boosting. Default is False.',
-                        default=False,
-                        action='store_true')
-    parser.add_argument('--cached',
-                        dest='cached',
-                        help='Whether to use caching. Default is False.',
-                        default=False,
-                        action='store_true')
-    parser.add_argument('--seed',
-                        metavar='',
-                        dest='random_seed',
-                        type=int,
-                        help='Random seed used for initialization. Default is 42.',
-                        default=42)
+    parser.add_argument(
+        "-f",
+        dest="file",
+        type=str,
+        help="Excel/CSV file with all previous experiments.",
+        required=True,
+    )
+    parser.add_argument(
+        "-c",
+        dest="json",
+        type=str,
+        help="Json configuration file with parameters and objectives.",
+        required=True,
+    )
+    parser.add_argument(
+        "-n",
+        metavar="",
+        dest="num_experiments",
+        type=int,
+        help="Number of experiments to suggest. Default is 1. "
+        "Note that Gryffin will alternate between exploration and exploitation.",
+        default=1,
+    )
+    parser.add_argument(
+        "--num_cpus",
+        metavar="",
+        dest="num_cpus",
+        type=int,
+        help="Number of CPUs to use. Default is 1.",
+        default=1,
+    )
+    parser.add_argument(
+        "--optimizer",
+        metavar="",
+        dest="optimizer",
+        type=str.lower,
+        help='Algorithm to use to optimize the acquisition function. Choices are "adam" or "genetic". '
+        'Default is "adam".',
+        default="adam",
+        choices=["adam", "genetic"],
+    )
+    parser.add_argument(
+        "--dynamic",
+        dest="dynamic",
+        help="Whether to use dynamic Gryffin. Default is False.",
+        default=False,
+        action="store_true",
+    )
+    parser.add_argument(
+        "--feas_approach",
+        metavar="",
+        dest="feas_approach",
+        type=str.lower,
+        help="Approach to unknown feasibility constraints. Choices are: "
+        '"fwa" (feasibility-weighted acquisition), '
+        '"fca" (feasibility-constrained acquisition), '
+        '"fia" (feasibility-interpolated acquisition). '
+        'Default is "fia".',
+        default="fia",
+        choices=["fwa", "fca", "fia"],
+    )
+    parser.add_argument(
+        "--boosted",
+        dest="boosted",
+        help="Whether to use boosting. Default is False.",
+        default=False,
+        action="store_true",
+    )
+    parser.add_argument(
+        "--cached",
+        dest="cached",
+        help="Whether to use caching. Default is False.",
+        default=False,
+        action="store_true",
+    )
+    parser.add_argument(
+        "--seed",
+        metavar="",
+        dest="random_seed",
+        type=int,
+        help="Random seed used for initialization. Default is 42.",
+        default=42,
+    )
     args = parser.parse_args()
     return args
 
@@ -92,16 +111,18 @@ def parse_options():
 def main(args):
 
     # load past experiments
-    infile_extension = args.file.split('.')[-1]  # get extension
+    infile_extension = args.file.split(".")[-1]  # get extension
     df_in = _load_tabular_data(args, infile_extension)
 
     # load params/objectives
-    with open(args.json, 'r') as jsonfile:
+    with open(args.json, "r") as jsonfile:
         config = json.load(jsonfile)
 
     # check we have all right params/objs in the csv file
-    obj_names = [obj['name'] for obj in config["objectives"]]  # N.B. order matters
-    param_names = [param['name'] for param in config["parameters"]]  # N.B. order matters
+    obj_names = [obj["name"] for obj in config["objectives"]]  # N.B. order matters
+    param_names = [
+        param["name"] for param in config["parameters"]
+    ]  # N.B. order matters
     _check_table_against_config(args, df_in, obj_names, param_names)
 
     # drop rows with NaN values in the parameters
@@ -109,7 +130,7 @@ def main(args):
 
     # show past experiments
     print()
-    print_df_as_rich_table(df_in, title='Past Experiments')
+    print_df_as_rich_table(df_in, title="Past Experiments")
 
     # init gryffin
     gryffin = init_objects(args, config)
@@ -139,9 +160,9 @@ def main(args):
         df_samples.loc[:, param_name] = param_values
 
     # show proposed experiments
-    print_df_as_rich_table(df_samples, title='Proposed Experiments')
+    print_df_as_rich_table(df_samples, title="Proposed Experiments")
     print()
-        
+
     # append df_samples to df_in
     df_out = df_in.append(df_samples, ignore_index=True, sort=False)
 
@@ -152,18 +173,24 @@ def main(args):
     shutil.copy(args.file, bkp_file)
 
     # save new result file
-    if infile_extension == 'csv':
+    if infile_extension == "csv":
         df_out.to_csv(args.file, index=False)
-    elif infile_extension in ['xls', 'xlsx']:
+    elif infile_extension in ["xls", "xlsx"]:
         df_out.to_excel(args.file, index=False)
 
     # print final remakrs
     console = Console()
-    console.print('Notes:', style='bold red')
-    console.print(f'- The original file [green]{args.file}[/green] has been backed up as [green]backup_{args.file}[/green]')
-    console.print(f'- The proposed experiments have been appended to the file [green]{args.file}[/green]')
+    console.print("Notes:", style="bold red")
+    console.print(
+        f"- The original file [green]{args.file}[/green] has been backed up as [green]backup_{args.file}[/green]"
+    )
+    console.print(
+        f"- The proposed experiments have been appended to the file [green]{args.file}[/green]"
+    )
     obj_names_string = ", ".join(obj_names)
-    console.print(f'- Add the results for the proposed experiments under the columns [green]{obj_names_string}[/green]')
+    console.print(
+        f"- Add the results for the proposed experiments under the columns [green]{obj_names_string}[/green]"
+    )
     print()
 
 
@@ -172,9 +199,9 @@ def main(args):
 # =========
 def _load_tabular_data(args, infile_extension):
     # load data
-    if infile_extension == 'csv':
+    if infile_extension == "csv":
         df_in = pd.read_csv(args.file)
-    elif infile_extension in ['xls', 'xlsx']:
+    elif infile_extension in ["xls", "xlsx"]:
         df_in = pd.read_excel(args.file)
 
     # rm rows if NaN in parameters. NaN in objective is allowed as infeasible experiment.
@@ -185,10 +212,14 @@ def _check_table_against_config(args, df_in, obj_names, param_names):
     """Check inputs for correctness"""
     for obj_name in obj_names:
         if obj_name not in df_in.columns:
-            raise ValueError(f"Expected objective '{obj_name}' missing from {args.file}")
+            raise ValueError(
+                f"Expected objective '{obj_name}' missing from {args.file}"
+            )
     for param_name in param_names:
         if param_name not in df_in.columns:
-            raise ValueError(f"Expected parameter '{param_name}' missing from {args.file}")
+            raise ValueError(
+                f"Expected parameter '{param_name}' missing from {args.file}"
+            )
 
 
 def _df_to_observations(df):
@@ -233,10 +264,12 @@ def infer_batches_and_strategies(num_experiments):
             sampling_strategies = 2
             batches = num_experiments / 2
             return batches, sampling_strategies
-        raise GryffinSettingsError('please do not select a prime number of experiments')
+        raise GryffinSettingsError("please do not select a prime number of experiments")
     else:
-        raise GryffinSettingsError('you are selecting a large batch of experiments - this is not the intended use of '
-                                   'Gryffin. Contanct the authors for further guidance if needed.')
+        raise GryffinSettingsError(
+            "you are selecting a large batch of experiments - this is not the intended use of "
+            "Gryffin. Contanct the authors for further guidance if needed."
+        )
 
     return batches, sampling_strategies
 
@@ -245,25 +278,25 @@ def init_objects(args, config):
 
     batches, sampling_strategies = infer_batches_and_strategies(args.num_experiments)
 
-    if args.feas_approach in ['fia', 'fwa']:
+    if args.feas_approach in ["fia", "fwa"]:
         feas_param = 1
-    elif args.feas_approach == 'fca':
+    elif args.feas_approach == "fca":
         feas_param = 0.5
 
     config["general"] = {
-                        "num_cpus": args.num_cpus,
-                        "boosted": args.boosted,
-                        "caching": args.cached,
-                        "batches": int(batches),
-                        "sampling_strategies": int(sampling_strategies),
-                        "auto_desc_gen": args.dynamic,
-                        "feas_approach": args.feas_approach,
-                        "feas_param": feas_param,
-                        "random_seed": args.random_seed,
-                        "save_database": False,
-                        "acquisition_optimizer": args.optimizer,
-                        "verbosity": 3
-                        }
+        "num_cpus": args.num_cpus,
+        "boosted": args.boosted,
+        "caching": args.cached,
+        "batches": int(batches),
+        "sampling_strategies": int(sampling_strategies),
+        "auto_desc_gen": args.dynamic,
+        "feas_approach": args.feas_approach,
+        "feas_param": feas_param,
+        "random_seed": args.random_seed,
+        "save_database": False,
+        "acquisition_optimizer": args.optimizer,
+        "verbosity": 3,
+    }
 
     gryffin = Gryffin(config_dict=config)
     return gryffin
@@ -277,7 +310,9 @@ def suggest_next_experiments(gryffin, observations, num_experiments):
         sampling_strategies = [-1, 1]
         select_idx = len(observations) % 2
         strategy = sampling_strategies[select_idx]
-        samples = gryffin.recommend(observations=observations, sampling_strategies=[strategy])
+        samples = gryffin.recommend(
+            observations=observations, sampling_strategies=[strategy]
+        )
     # i.e. sampling_strategies * batches == num_experiments
     else:
         samples = gryffin.recommend(observations=observations)
@@ -295,7 +330,7 @@ def print_df_as_rich_table(df, title):
 
     np_data = df.to_numpy()
     for i, row in enumerate(np_data):
-        row_str = [f'{i + 1:d}'] + [f'{x:f}' for x in row]
+        row_str = [f"{i + 1:d}"] + [f"{x:f}" for x in row]
         table.add_row(*row_str)
 
     console.print(table)
@@ -308,5 +343,3 @@ def entry_point():
 
 if __name__ == "__main__":
     entry_point()
-
-

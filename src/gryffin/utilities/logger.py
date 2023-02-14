@@ -1,6 +1,6 @@
-#!/usr/bin/env python 
+#!/usr/bin/env python
 
-__author__ = 'Florian Hase, Matteo Aldeghi'
+__author__ = "Florian Hase, Matteo Aldeghi"
 
 import sys
 import traceback
@@ -12,30 +12,44 @@ class Logger:
     # DEBUG, INFO           --> stdout
     # WARNING, ERROR, FATAL --> stderr
 
-    VERBOSITY_LEVELS = {0: ['FATAL'],
-                        1: ['FATAL', 'ERROR'],
-                        2: ['FATAL', 'ERROR', 'WARNING'],
-                        3: ['FATAL', 'ERROR', 'WARNING', 'STATS'],          # minimal info
-                        4: ['FATAL', 'ERROR', 'WARNING', 'STATS', 'INFO'],  # richer info
-                        5: ['FATAL', 'ERROR', 'WARNING', 'STATS', 'INFO', 'DEBUG']}
+    VERBOSITY_LEVELS = {
+        0: ["FATAL"],
+        1: ["FATAL", "ERROR"],
+        2: ["FATAL", "ERROR", "WARNING"],
+        3: ["FATAL", "ERROR", "WARNING", "STATS"],  # minimal info
+        4: ["FATAL", "ERROR", "WARNING", "STATS", "INFO"],  # richer info
+        5: ["FATAL", "ERROR", "WARNING", "STATS", "INFO", "DEBUG"],
+    }
 
-    WRITER = {'DEBUG': sys.stdout, 'INFO': sys.stdout,
-              'WARNING': sys.stderr, 'ERROR': sys.stderr, 'FATAL': sys.stderr}
+    WRITER = {
+        "DEBUG": sys.stdout,
+        "INFO": sys.stdout,
+        "WARNING": sys.stderr,
+        "ERROR": sys.stderr,
+        "FATAL": sys.stderr,
+    }
 
     # more colors and styles:
     # https://stackoverflow.com/questions/2048509/how-to-echo-with-different-colors-in-the-windows-command-line
     # https://joshtronic.com/2013/09/02/how-to-use-colors-in-command-line-output/
 
-    NONE = ''
-    WHITE = '#ffffff'
-    GREEN = '#d9ed92'
-    GRAY = '#d3d3d3'
-    YELLOW = '#f9dc5c'
-    ORANGE = '#f4a261'
-    RED = '#e5383b'
-    PURPLE = '#9d4edd'
+    NONE = ""
+    WHITE = "#ffffff"
+    GREEN = "#d9ed92"
+    GRAY = "#d3d3d3"
+    YELLOW = "#f9dc5c"
+    ORANGE = "#f4a261"
+    RED = "#e5383b"
+    PURPLE = "#9d4edd"
 
-    COLORS = {'DEBUG': GRAY, 'INFO': NONE, 'STATS': NONE, 'WARNING': ORANGE, 'ERROR': RED, 'FATAL': PURPLE}
+    COLORS = {
+        "DEBUG": GRAY,
+        "INFO": NONE,
+        "STATS": NONE,
+        "WARNING": ORANGE,
+        "ERROR": RED,
+        "FATAL": PURPLE,
+    }
 
     def __init__(self, name, verbosity=4):
         """
@@ -62,20 +76,15 @@ class Logger:
         if message_type in self.verbosity_levels:
             color = self.COLORS[message_type]
             error_message = None
-            if message_type in ['WARNING', 'ERROR', 'FATAL']:
+            if message_type in ["WARNING", "ERROR", "FATAL"]:
                 error_message = traceback.format_exc()
-                if 'NoneType: None' not in error_message:
+                if "NoneType: None" not in error_message:
                     self.error_console.print(error_message, style=f"{color}")
 
             self.console.print(message, style=f"{color}")
             return error_message, message
 
-    def log_chapter(self, title, line='─', style='#34a0a4'):
+    def log_chapter(self, title, line="─", style="#34a0a4"):
         if self.verbosity >= 4:
-            title = ' ' + title + ' '
-            self.console.print(f'{title:{line}^80}', style=style)
-
-
-
-
-
+            title = " " + title + " "
+            self.console.print(f"{title:{line}^80}", style=style)

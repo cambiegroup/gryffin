@@ -91,7 +91,7 @@ def test_moo():
 
 		samples = gryffin.recommend(observations, sampling_strategies=[sampling_strategy])
 		sample = samples[0]
-		# measure contunous surface with first 2 params
+		# measure continuous surface with first 2 params
 		observation = surface([sample['param_0'], sample['param_1']])
 		# mock categorical parameter measurement
 		observation += float(sample['param_2'][2:])

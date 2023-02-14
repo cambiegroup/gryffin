@@ -1,6 +1,6 @@
-#!/usr/bin/env python 
+#!/usr/bin/env python
 
-__author__ = 'Florian Hase'
+__author__ = "Florian Hase"
 
 
 import numpy as np
@@ -11,7 +11,6 @@ from . import AdamOptimizer, NaiveDiscreteOptimizer, NaiveCategoricalOptimizer
 
 
 class GradientOptimizer(Logger):
-
     def __init__(self, config, constraints=None):
         """
         constraints : list or None
@@ -20,7 +19,9 @@ class GradientOptimizer(Logger):
             whether it is in the feasible region or not.
         """
         self.config = config
-        Logger.__init__(self, 'GradientOptimizer', verbosity=self.config.get('verbosity'))
+        Logger.__init__(
+            self, "GradientOptimizer", verbosity=self.config.get("verbosity")
+        )
 
         # if constraints not None, and not a list, put into a list
         if constraints is not None and isinstance(constraints, list) is False:
@@ -35,11 +36,20 @@ class GradientOptimizer(Logger):
             self._optimize_one_sample = self._constrained_optimize_sample
 
         # parse positions
-        self.pos_continuous = np.array([True if f == 'continuous' else False for f in self.config.feature_types])
-        self.pos_categories = np.array([True if f == 'categorical' else False for f in self.config.feature_types])
-        self.pos_discrete = np.array([True if f == 'discrete' else False for f in self.config.feature_types])
+        self.pos_continuous = np.array(
+            [True if f == "continuous" else False for f in self.config.feature_types]
+        )
+        self.pos_categories = np.array(
+            [True if f == "categorical" else False for f in self.config.feature_types]
+        )
+        self.pos_discrete = np.array(
+            [True if f == "discrete" else False for f in self.config.feature_types]
+        )
         # quick/simple check
-        assert sum(self.pos_continuous) + sum(self.pos_categories) + sum(self.pos_discrete) == self.config.num_features
+        assert (
+            sum(self.pos_continuous) + sum(self.pos_categories) + sum(self.pos_discrete)
+            == self.config.num_features
+        )
 
         # instantiate optimizers for all variable types
         self.opt_con = AdamOptimizer()
@@ -47,13 +57,20 @@ class GradientOptimizer(Logger):
         self.opt_cat = NaiveCategoricalOptimizer()
 
     def _within_bounds(self, sample):
-        return not (np.any(sample < self.config.param_lowers) or np.any(sample > self.config.param_uppers))
+        return not (
+            np.any(sample < self.config.param_lowers)
+            or np.any(sample > self.config.param_uppers)
+        )
 
     def _project_sample_onto_bounds(self, sample):
         # project sample onto opt boundaries
         if not self._within_bounds(sample):
-            sample = np.where(sample < self.config.param_lowers, self.config.param_lowers, sample)
-            sample = np.where(sample > self.config.param_uppers, self.config.param_uppers, sample)
+            sample = np.where(
+                sample < self.config.param_lowers, self.config.param_lowers, sample
+            )
+            sample = np.where(
+                sample > self.config.param_uppers, self.config.param_uppers, sample
+            )
             sample = sample.astype(np.float32)
         return sample
 
@@ -84,8 +101,14 @@ class GradientOptimizer(Logger):
                     pos_categories[ignore_index] = False
 
         self.opt_con.set_func(kernel, select=pos_continuous)
-        self.opt_dis.set_func(kernel, pos=np.arange(self.config.num_features)[pos_discrete], highest=self.config.feature_sizes[self.pos_discrete])
-        self.opt_cat.set_func(kernel, select=pos_categories, feature_sizes=self.config.feature_sizes)
+        self.opt_dis.set_func(
+            kernel,
+            pos=np.arange(self.config.num_features)[pos_discrete],
+            highest=self.config.feature_sizes[self.pos_discrete],
+        )
+        self.opt_cat.set_func(
+            kernel, select=pos_categories, feature_sizes=self.config.feature_sizes
+        )
 
     def optimize(self, samples, max_iter=10, show_progress=False):
         """Optimise a list of samples
@@ -103,8 +126,12 @@ class GradientOptimizer(Logger):
 
         if show_progress is True:
             # run loop with progress bar
-            iterable = track(enumerate(samples), total=len(samples),
-                             description='Optimizing proposals...', transient=False)
+            iterable = track(
+                enumerate(samples),
+                total=len(samples),
+                description="Optimizing proposals...",
+                transient=False,
+            )
         else:
             # run loop without progress bar
             iterable = enumerate(samples)
@@ -144,7 +171,10 @@ class GradientOptimizer(Logger):
             # make sure we're still within the domain
             optimized = self._project_sample_onto_bounds(optimized)
             # check for convergence
-            if np.any(self.pos_continuous) and np.linalg.norm(sample_copy - optimized) < convergence_dx:
+            if (
+                np.any(self.pos_continuous)
+                and np.linalg.norm(sample_copy - optimized) < convergence_dx
+            ):
                 break
             else:
                 sample_copy = optimized.copy()
@@ -166,8 +196,12 @@ class GradientOptimizer(Logger):
             optimized = self._project_sample_onto_bounds(optimized)
 
             # evaluate whether the optimized sample violates the known constraints
-            param = param_vector_to_dict(param_vector=optimized, param_names=self.config.param_names,
-                                         param_options=self.config.param_options, param_types=self.config.param_types)
+            param = param_vector_to_dict(
+                param_vector=optimized,
+                param_names=self.config.param_names,
+                param_options=self.config.param_options,
+                param_types=self.config.param_types,
+            )
             feasible = [constr(param) for constr in self.constraints]
             if not all(feasible):
                 # stop optimization and return last feasible point
@@ -175,9 +209,11 @@ class GradientOptimizer(Logger):
                 break
 
             # check for convergence
-            if np.any(self.pos_continuous) and np.linalg.norm(prev_optimized - optimized) < convergence_dx:
+            if (
+                np.any(self.pos_continuous)
+                and np.linalg.norm(prev_optimized - optimized) < convergence_dx
+            ):
                 break
             else:
                 prev_optimized = optimized.copy()
         return optimized
-

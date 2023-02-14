@@ -1,13 +1,12 @@
-#!/usr/bin/env python 
+#!/usr/bin/env python
 
-__author__ = 'Florian Hase'
+__author__ = "Florian Hase"
 
 
 import numpy as np
 
 
 class NaiveDiscreteOptimizer:
-
     def __init__(self, func=None):
         self.func = func
 
@@ -37,4 +36,3 @@ class NaiveDiscreteOptimizer:
             else:
                 vector[pos] = current
         return vector
-
