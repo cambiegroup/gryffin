@@ -102,14 +102,9 @@ class BayesianNetwork(Logger):
     def sample(self, obs_params):
         start = time.time()
 
-        if self.verbosity > 3.5:  # i.e. at INFO level
-            cm = self.console.status("Training the Bayesian neural network...")
-        else:
-            cm = nullcontext()
-
-        with cm:
-            trainer = BNNTrainer(self.config, self.model_details, self.frac_feas)
-            model = trainer.train(obs_params)
+        print("Training the Bayesian neural network...")
+        trainer = BNNTrainer(self.config, self.model_details, self.frac_feas)
+        model = trainer.train(obs_params)
 
         self.trace_kernels = model.get_kernels()
 

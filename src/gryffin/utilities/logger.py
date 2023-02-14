@@ -4,7 +4,6 @@ __author__ = "Florian Hase, Matteo Aldeghi"
 
 import sys
 import traceback
-from rich.console import Console
 
 
 class Logger:
@@ -63,8 +62,6 @@ class Logger:
         self.name = name
         self.verbosity = verbosity
         self.verbosity_levels = self.VERBOSITY_LEVELS[self.verbosity]
-        self.console = Console(stderr=False)
-        self.error_console = Console(stderr=True)
 
     def update_verbosity(self, verbosity=3):
         self.verbosity = verbosity
@@ -74,17 +71,16 @@ class Logger:
 
         # check if we need to log the message
         if message_type in self.verbosity_levels:
-            color = self.COLORS[message_type]
             error_message = None
             if message_type in ["WARNING", "ERROR", "FATAL"]:
                 error_message = traceback.format_exc()
                 if "NoneType: None" not in error_message:
-                    self.error_console.print(error_message, style=f"{color}")
+                    print(error_message, file=sys.stderr)
 
-            self.console.print(message, style=f"{color}")
+            print(message)
             return error_message, message
 
-    def log_chapter(self, title, line="─", style="#34a0a4"):
+    def log_chapter(self, title, line="─",):
         if self.verbosity >= 4:
             title = " " + title + " "
-            self.console.print(f"{title:{line}^80}", style=style)
+            print(f"{title:{line}^80}")
