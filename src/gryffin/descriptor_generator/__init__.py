@@ -1,6 +1,6 @@
-#!/usr/bin/env 
+#!/usr/bin/env
 
-__author__ = 'Florian Hase'
+__author__ = "Florian Hase"
 
 import sys
 from gryffin.utilities import GryffinModuleError

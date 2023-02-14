@@ -1,13 +1,21 @@
-#!/usr/bin/env python 
+#!/usr/bin/env python
 
-__author__ = 'Florian Hase, Matteo Aldeghi'
+__author__ = "Florian Hase, Matteo Aldeghi"
 
 import numpy as np
 
 
 class AdamOptimizer:
-
-    def __init__(self, func=None, select=None, eta=0.01, beta_1=0.9, beta_2=0.999, epsilon=1e-8, decay=False):
+    def __init__(
+        self,
+        func=None,
+        select=None,
+        eta=0.01,
+        beta_1=0.9,
+        beta_2=0.999,
+        epsilon=1e-8,
+        decay=False,
+    ):
         """
         Adam optimizer: https://arxiv.org/abs/1412.6980.
 
@@ -57,7 +65,9 @@ class AdamOptimizer:
         self.select_bool = np.array(select)
         self.num_dims = len(self.select_bool)
         self.select_idx = np.arange(self.num_dims)[self.select_bool]
-        self.ms = np.zeros(self.num_dims)  # moment vector (length is size of input vector, i.e. opt domain)
+        self.ms = np.zeros(
+            self.num_dims
+        )  # moment vector (length is size of input vector, i.e. opt domain)
         self.vs = np.zeros(self.num_dims)  # exponentially weighted infinity norm
 
     def reset(self):
@@ -91,7 +101,9 @@ class AdamOptimizer:
 
         for i in self.select_idx:
             perturb[i] += self.dx
-            gradient = (self.func(sample + perturb) - self.func(sample - perturb)) / (2. * self.dx)
+            gradient = (self.func(sample + perturb) - self.func(sample - perturb)) / (
+                2.0 * self.dx
+            )
             gradients[i] = gradient
             perturb[i] -= self.dx
 
@@ -123,12 +135,14 @@ class AdamOptimizer:
 
         # eta(t) = eta * sqrt(1 – beta2(t)) / (1 – beta1(t))
         # where: beta(t) = beta^t
-        eta_next = eta * (np.sqrt(1. - np.power(self.beta_2, self.iterations)) /
-                          (1. - np.power(self.beta_1, self.iterations)))
+        eta_next = eta * (
+            np.sqrt(1.0 - np.power(self.beta_2, self.iterations))
+            / (1.0 - np.power(self.beta_1, self.iterations))
+        )
         # m(t) = beta1 * m(t-1) + (1 – beta1) * g(t)
-        ms_next = (self.beta_1 * self.ms) + (1. - self.beta_1) * grads
+        ms_next = (self.beta_1 * self.ms) + (1.0 - self.beta_1) * grads
         # v(t) = beta2 * v(t-1) + (1 – beta2) * g(t)^2
-        vs_next = (self.beta_2 * self.vs) + (1. - self.beta_2) * np.square(grads)
+        vs_next = (self.beta_2 * self.vs) + (1.0 - self.beta_2) * np.square(grads)
 
         # update sample: x(t) = x(t-1) – eta(t) * m(t) / (sqrt(v(t)) + eps)
         sample_next = sample - eta_next * ms_next / (np.sqrt(vs_next) + self.epsilon)
@@ -140,15 +154,14 @@ class AdamOptimizer:
         return sample_next
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
 
     import matplotlib.pyplot as plt
-    import seaborn as sns
 
     adam = AdamOptimizer()
 
     def func(x):
-        return (x - 1)**2
+        return (x - 1) ** 2
 
     adam.set_func(func, select=[True])
 
@@ -163,13 +176,8 @@ if __name__ == '__main__':
 
         plt.clf()
         plt.plot(domain, values)
-        plt.plot(start, func(start), marker='o', color='k')
+        plt.plot(start, func(start), marker="o", color="k")
 
         start = adam.get_update(start)
 
         plt.pause(0.05)
-
-
-
-
-

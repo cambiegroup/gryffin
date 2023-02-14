@@ -10,7 +10,7 @@ import platform
 def parse_time(start, end):
     elapsed = end - start  # elapsed time in seconds
     if elapsed <= 1.0:
-        ms = elapsed * 1000.
+        ms = elapsed * 1000.0
         time_string = f"{ms:.1f} ms"
     elif 1.0 < elapsed < 60.0:
         time_string = f"{elapsed:.1f} s"
@@ -21,19 +21,19 @@ def parse_time(start, end):
 
 
 def memory_usage():
-    if platform.system() == 'Windows':
+    if platform.system() == "Windows":
         return 0, 0, 0
-    elif platform.system() == 'Darwin':  # MacOS --> memory in bytes
-        kB = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss // 1000.
+    elif platform.system() == "Darwin":  # MacOS --> memory in bytes
+        kB = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss // 1000.0
     else:  # Linux --> memory in kilobytes
         kB = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
 
-    GB = kB // 1000000.
-    MB = kB // 1000.
-    kB = kB % 1000.
+    GB = kB // 1000000.0
+    MB = kB // 1000.0
+    kB = kB % 1000.0
     return GB, MB, kB
 
 
 def print_memory_usage():
     GB, MB, kB = memory_usage()
-    print(f'==> MEMORY USAGE: {GB:.0f} GB, {MB:.0f} MB, {kB:.0f} kB')
+    print(f"==> MEMORY USAGE: {GB:.0f} GB, {MB:.0f} MB, {kB:.0f} kB")
