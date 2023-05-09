@@ -4,19 +4,20 @@ on: [push, pull_request]
 
 jobs:
   build_wheels:
-    name: Build wheels on ${{ matrix.os }}
+    name: Build wheels on ${{ matrix.os }} and {{matrix.py}}
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         os: [windows-latest]
+        py: ['3.10', '3.11']
 
     steps:
       - uses: actions/checkout@v3
 
-      - name: Set up Python 3.10
+      - name: Set up Python ${{ matrix.os }}
         uses: actions/setup-python@v4
         with:
-          python-version: '3.10'
+          python-version: ${{ matrix.os }}
 
       - name: Prepare, i.e. creates *.c files
         run: |
