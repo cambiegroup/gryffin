@@ -4,7 +4,7 @@ on: [push, pull_request]
 
 jobs:
   build_wheels:
-    name: Build wheels on ${{ matrix.os }} and {{matrix.py}}
+    name: Build wheels on ${{ matrix.os }} and ${{matrix.py}}
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -17,7 +17,7 @@ jobs:
       - name: Set up Python ${{ matrix.os }}
         uses: actions/setup-python@v4
         with:
-          python-version: ${{ matrix.os }}
+          python-version: ${{ matrix.py }}
 
       - name: Prepare, i.e. creates *.c files
         run: |
